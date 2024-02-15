@@ -45,13 +45,25 @@ const enseignantController = {
 
             const {nomEnseignant, tauxHoraire, nbHeure} = req.body
 
-            const sql = "insert into enseignant (nomEnseignant, tauxHoraire, nbHeure) value (?, ?, ?)"
+            const [existdata, field] = await pool.query("select * from enseignant where nomEnseignant = ? and tauxHoraire = ? and nbHeure = ?", [nomEnseignant, tauxHoraire, nbHeure])
 
-            const [rows, fields] = await pool.query(sql, [nomEnseignant, tauxHoraire, nbHeure])
+            if (existdata == '') {
 
-            res.json({
-                date: rows
-            })
+                const sql = "insert into enseignant (nomEnseignant, tauxHoraire, nbHeure) value (?, ?, ?)"
+                const [rows, fields] = await pool.query(sql, [nomEnseignant, tauxHoraire, nbHeure])
+
+                res.json({
+                    date: rows
+                })
+               
+            } else {
+
+                res.json({
+                    date: 'existdata'
+                })
+            }
+
+           
             
         } catch (error) {
             console.log(error)
