@@ -1,10 +1,11 @@
 const pool = require('../database/database')
 
-const enseignantController = {
-    getAll: async (req, res) => {
+const clientController = {
+
+    getAllClient: async (req, res) => {
 
         try {
-            const [rows, fields] = await pool.query("select * from enseignant ")
+            const [rows, fields] = await pool.query("select * from client ")
 
             res.json({
                 data: rows
@@ -18,14 +19,14 @@ const enseignantController = {
         }
 
     }, 
-
-    getById : async (req, res) => {
+    
+    getByIdClient : async (req, res) => {
 
         try {
             
             const {id} = req.params
 
-            const [rows, fields] = await pool.query("select * from enseignant where matricule = ?", [id])
+            const [rows, fields] = await pool.query("select * from client where client_id = ?", [id])
 
             res.json({
                 date: rows
@@ -39,53 +40,54 @@ const enseignantController = {
         }
     }, 
 
-    create : async (req, res) => {
+    createClient : async (req, res) => {
 
         try {
-
-            const {nomEnseignant, tauxHoraire, nbHeure} = req.body
-
-            const [existdata, field] = await pool.query("select * from enseignant where nomEnseignant = ? and tauxHoraire = ? and nbHeure = ?", [nomEnseignant, tauxHoraire, nbHeure])
-
+            const { nom, email, adresse, type_client} = req.body;
+            
+        
+    
+            const [existdata, field] = await pool.query("select * from client where nom = ? and email = ? and adresse = ? and type_client = ? ", [nom, email, adresse, type_client])
+    
+            
             if (existdata == '') {
-
-                const sql = "insert into enseignant (nomEnseignant, tauxHoraire, nbHeure) value (?, ?, ?)"
-                const [rows, fields] = await pool.query(sql, [nomEnseignant, tauxHoraire, nbHeure])
-
+                const sql = "insert into client ( nom, email, adresse, type_client) values (?, ?, ?, ?)"
+                const [rows, fields] = await pool.query(sql, [ nom, email, adresse, type_client])
+                
                 res.json({
                     date: rows
                 })
+                
                
             } else {
-
+    
                 res.json({
                     date: 'existdata'
                 })
             }
-
-           
-            
+    
         } catch (error) {
             console.log(error)
-            res.json({
-                status: error
+            res.status(400).json({
+                error: error.message
             })
             
         }
-
+    
     }, 
+    
 
-    update : async (req, res) => {
+    updateClient : async (req, res) => {
 
         try {
             
-            const {nomEnseignant, tauxHoraire, nbHeure} = req.body
+            const { nom, email, adresse, type_client} = req.body
 
             const {id} = req.params
 
-            const sql = "update enseignant set nomEnseignant = ?, tauxHoraire = ?, nbHeure = ? where matricule = ?"
+            const sql = "update client set  nom = ?, email = ?, adresse = ?, type_client = ? where client_id = ?"
 
-            const [rows, fields] = await pool.query(sql, [nomEnseignant, tauxHoraire, nbHeure, id])
+            const [rows, fields] = await pool.query(sql, [ nom, email, adresse, type_client, id])
 
             res.json({
                 date: rows
@@ -101,13 +103,13 @@ const enseignantController = {
 
     },
 
-    delete : async (req, res) => {
+    deleteClient : async (req, res) => {
 
         try {
             
             const {id} = req.params
 
-            const [rows, fields] = await pool.query("delete from enseignant where matricule = ?", [id])
+            const [rows, fields] = await pool.query("delete from client where client_id = ?", [id])
 
             res.json({
                 date: rows
@@ -122,7 +124,7 @@ const enseignantController = {
         }
 
     }
-
 }
 
-module.exports = enseignantController
+
+module.exports = clientController
